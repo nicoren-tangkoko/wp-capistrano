@@ -54,21 +54,21 @@ echo -e "\e[32mInstalling plugins ...\e[0m"
 plugins=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$current_path |awk '{ print $1 }'))
 nbPlugins=$((${#plugins[@]} - 1))
 plugins_status=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$current_path |awk '{ print $2 }'))
+plugins_versions=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$current_path |awk '{ print $4 }'))
 for i in `seq 1 $nbPlugins`;
 do
   /usr/local/bin/php /tmp/wp-cli.phar plugin install ${plugins[i]} --path=$new_path
   echo /usr/local/bin/php /tmp/wp-cli.phar plugin install ${plugins[i]} --path=$new_path
   if [ ${plugins_status[i]} = "active" ];
   then
-     /usr/local/bin/php /tmp/wp-cli.phar plugin activate ${plugins[i]} --path=$new_path
+     /usr/local/bin/php /tmp/wp-cli.phar plugin activate ${plugins[i]} --path=$new_path --version=${plugins_versions[i]}
   else
-     /usr/local/bin/php /tmp/wp-cli.phar plugin deactivate ${plugins[i]} --path=$new_path
+     /usr/local/bin/php /tmp/wp-cli.phar plugin deactivate ${plugins[i]} --path=$new_path --version=${plugins_versions[i]}
   fi
 done
 BASH
 
          upload! StringIO.new(bashScript), "/tmp/install_plugins.sh"
-         execute "/usr/local/bin/php -v"
          execute "/bin/bash /tmp/install_plugins.sh -c \"#{current_path}\" -n #{release_path}"
         end
     end
