@@ -7,6 +7,6 @@ load File.expand_path("../tasks/update_wordpress.rake", __FILE__)
 
 namespace :load do
   task :defaults do
-    load "lib/capistrano/wp-capistrano/defaults.rb"
+    load "capistrano/wp-capistrano/defaults.rb"
   end
 end
