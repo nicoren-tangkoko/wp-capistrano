@@ -1,5 +1,5 @@
 namespace "wp-capistrano" do
-  desc 'Download wordpress'
+  desc 'Install wordpress'
   task :install_wordpress do
     on roles(:app), filter: :no_release do
           execute "rm #{shared_path}/wp-config.php"
