@@ -1,3 +1,4 @@
+require 'json'
 namespace "wp-capistrano" do
   desc 'Install wordpress plugins'
   task :install_plugins do
@@ -24,6 +25,9 @@ while [ "$1" != "" ]; do
         -c | --current_path )           shift
                                 current_path="$1"
                                 ;;
+        -p | --plugins )           shift
+                                plugins="$1"
+                                ;;
         -n | --new_path )    shift
                                 new_path="$1"
                                 ;;
@@ -49,6 +53,8 @@ then
    exit 
 fi
 
+echo $plugins
+
 echo -e "\e[32mInstalling plugins ...\e[0m"
 
 plugins=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$current_path |awk '{ print $1 }'))
@@ -57,19 +63,21 @@ plugins_status=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$curren
 plugins_versions=($(/usr/local/bin/php /tmp/wp-cli.phar plugin list --path=$current_path |awk '{ print $4 }'))
 for i in `seq 1 $nbPlugins`;
 do
-  /usr/local/bin/php /tmp/wp-cli.phar plugin install ${plugins[i]} --path=$new_path
+  /usr/local/bin/php /tmp/wp-cli.phar plugin install ${plugins[i]} --path=$new_path --version=${plugins_versions[i]}
   echo /usr/local/bin/php /tmp/wp-cli.phar plugin install ${plugins[i]} --path=$new_path
   if [ ${plugins_status[i]} = "active" ];
   then
-     /usr/local/bin/php /tmp/wp-cli.phar plugin activate ${plugins[i]} --path=$new_path --version=${plugins_versions[i]}
+     /usr/local/bin/php /tmp/wp-cli.phar plugin activate ${plugins[i]} --path=$new_path
   else
-     /usr/local/bin/php /tmp/wp-cli.phar plugin deactivate ${plugins[i]} --path=$new_path --version=${plugins_versions[i]}
+     /usr/local/bin/php /tmp/wp-cli.phar plugin deactivate ${plugins[i]} --path=$new_path
   fi
 done
 BASH
-
          upload! StringIO.new(bashScript), "/tmp/install_plugins.sh"
-         execute "/bin/bash /tmp/install_plugins.sh -c \"#{current_path}\" -n #{release_path}"
-        end
+         if(File.exist?("#{release_path}/plugins.json"))
+            then plugins = JSON.parse(File.read("#{release_path}/plugins.json"))
+         end
+         execute "/bin/bash /tmp/install_plugins.sh -c \"#{current_path}\" -n #{release_path} -p #{plugins}"
+      end
     end
 end
