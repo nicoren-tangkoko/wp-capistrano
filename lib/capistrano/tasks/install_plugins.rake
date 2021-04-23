@@ -34,7 +34,7 @@ namespace "wp-capistrano" do
                if(plugginInfo)
                   plugginInfo[:version] = version
                else
-                  pluginInfo = {:slug =>  plugin, :version => version, :status => "activate" }
+                  pluginInfo = {:slug =>  plugin, :version => version, :status => "active" }
                   plugins.push(pluginInfo)
                end
             end
