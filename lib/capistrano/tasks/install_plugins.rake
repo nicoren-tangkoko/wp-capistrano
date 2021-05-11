@@ -33,6 +33,7 @@ namespace "wp-capistrano" do
               plugginInfo = plugins.detect {|f| f["slug"] == plugin }
                if(plugginInfo)
                   plugginInfo[:version] = version
+                  plugginInfo[:status] = "active"
                else
                   pluginInfo = {:slug =>  plugin, :version => version, :status => "active" }
                   plugins.push(pluginInfo)
@@ -45,9 +46,17 @@ namespace "wp-capistrano" do
                   warn "Pluggin #{plugin[:slug]} not known in wordpress repository. skip installation"
                   next
                end
+               
+               if (plugin[:version] == "uninstall")
+                  warn "Uninstall pluggin #{plugin[:slug]}"
+                  next
+               end
 
                info "install #{plugin[:slug]}:#{plugin[:version]}"
-               execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
+               if(plugin[:version]) == "latest"
+                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
+               else
+                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
            end
            plugins.each do |plugin|
            	if (plugin[:status] == "active")
