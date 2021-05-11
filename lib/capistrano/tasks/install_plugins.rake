@@ -57,6 +57,7 @@ namespace "wp-capistrano" do
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
                else
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
+               end
            end
            plugins.each do |plugin|
            	if (plugin[:status] == "active")
