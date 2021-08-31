@@ -3,13 +3,14 @@ namespace "wp-capistrano" do
   desc 'Install wordpress plugins'
   task :install_plugins do
     on roles(:app) do  
+         jsonPlugins = []
          info "Check file #{release_path}/plugins.json"
          if (test("[ -f #{release_path}/plugins.json ]"))
             debug "#{release_path}/plugins.json exist"
             pluginsStr = capture("cat #{release_path}/plugins.json")
             jsonPlugins = JSON.parse(pluginsStr)
          end
-         
+                  
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
             installedPlugins = capture("/usr/bin/env php /tmp/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $1 }'")
@@ -19,7 +20,8 @@ namespace "wp-capistrano" do
             installedPluginsVersion = capture("/usr/bin/env php /tmp/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
             installedPluginsVersionArr = installedPluginsVersion.to_s.gsub(/\n/, '|').split("|")
             
-            plugins = [];
+            plugins = []
+            languages = []
             
             installedPluginsArr.each_with_index do |plugin, index|
                   if(index == 0)
@@ -28,17 +30,26 @@ namespace "wp-capistrano" do
                   pluginInfo = {:slug =>  plugin, :version => installedPluginsVersionArr[index], :status => installedPluginsStatusArr[index] }
                   plugins.push(pluginInfo)
             end
+            if( !jsonPlugins["plugins"].nil? )
+	        jsonPlugins.each do |plugin, version|
+	            plugginInfo = plugins.detect {|f| f["slug"] == plugin }
+	            if(plugginInfo)
+	              plugginInfo[:version] = version
+	              plugginInfo[:status] = "active"
+	            else
+	              pluginInfo = {:slug =>  plugin, :version => version, :status => "active" }
+	              plugins.push(pluginInfo)
+	            end
+	        end
+	    end
+	    
+	    if( !jsonPlugins["languages"].nil? )
+	        jsonPlugins["languages"].each do |language|
+	            execute "/usr/bin/env php /tmp/wp-cli.phar language core install #{language} --path=#{release_path}"
+	            execute "/usr/bin/env php /tmp/wp-cli.phar language core activate #{language} --path=#{release_path}"
+	        end
+	    end
 
-            jsonPlugins.each do |plugin, version|
-              plugginInfo = plugins.detect {|f| f["slug"] == plugin }
-               if(plugginInfo)
-                  plugginInfo[:version] = version
-                  plugginInfo[:status] = "active"
-               else
-                  pluginInfo = {:slug =>  plugin, :version => version, :status => "active" }
-                  plugins.push(pluginInfo)
-               end
-            end
 
             plugins.each do |plugin|
                existingPlugins = capture("/usr/bin/env php /tmp/wp-cli.phar plugin search #{plugin[:slug]} --path=#{release_path} --field=slug --per-page=999999")
