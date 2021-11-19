@@ -31,7 +31,7 @@ namespace "wp-capistrano" do
                   plugins.push(pluginInfo)
             end
             if( !jsonPlugins["plugins"].nil? )
-	        jsonPlugins.each do |plugin, version|
+	        jsonPlugins["plugins"].each do |plugin, version|
 	            plugginInfo = plugins.detect {|f| f["slug"] == plugin }
 	            if(plugginInfo)
 	              plugginInfo[:version] = version
@@ -66,14 +66,16 @@ namespace "wp-capistrano" do
                info "install #{plugin[:slug]}:#{plugin[:version]}"
                if(plugin[:version]) == "latest"
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
+                  info "install #{plugin[:slug]}"
                else
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
+                  info "install #{plugin[:slug]} #{plugin[:version]}"
                end
            end
            plugins.each do |plugin|
            	if (plugin[:status] == "active")
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path}"
-                  info "activate #{plugin}"
+                  info "activate #{plugin[:slug]}"
                else
                   execute "/usr/bin/env php /tmp/wp-cli.phar plugin deactivate #{plugin[:slug]} --path=#{release_path}"
                   info "deactivate #{plugin[:slug]}"
