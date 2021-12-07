@@ -13,11 +13,11 @@ namespace "wp-capistrano" do
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            installedPlugins = capture("/usr/bin/env php /tmp/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $1 }'")
+            installedPlugins = capture("/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $1 }'")
             installedPluginsArr = installedPlugins.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsStatus = capture("/usr/bin/env php /tmp/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $2 }'")
+            installedPluginsStatus = capture("/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $2 }'")
             installedPluginsStatusArr = installedPluginsStatus.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsVersion = capture("/usr/bin/env php /tmp/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
+            installedPluginsVersion = capture("/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
             installedPluginsVersionArr = installedPluginsVersion.to_s.gsub(/\n/, '|').split("|")
             
             plugins = []
@@ -45,14 +45,14 @@ namespace "wp-capistrano" do
 	    
 	    if( !jsonPlugins["languages"].nil? )
 	        jsonPlugins["languages"].each do |language|
-	            execute "/usr/bin/env php /tmp/wp-cli.phar language core install #{language} --path=#{release_path}"
-	            execute "/usr/bin/env php /tmp/wp-cli.phar language core activate #{language} --path=#{release_path}"
+	            execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar language core install #{language} --path=#{release_path}"
+	            execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar language core activate #{language} --path=#{release_path}"
 	        end
 	    end
 
 
             plugins.each do |plugin|
-               existingPlugins = capture("/usr/bin/env php /tmp/wp-cli.phar plugin search #{plugin[:slug]} --path=#{release_path} --field=slug --per-page=999999")
+               existingPlugins = capture("/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin search #{plugin[:slug]} --path=#{release_path} --field=slug --per-page=999999")
                if (existingPlugins.to_s.gsub(/\n/, '|').split("|").include?("#{plugin[:slug]}") == false)
                   warn "Pluggin #{plugin[:slug]} not known in wordpress repository. skip installation"
                   next
@@ -65,19 +65,19 @@ namespace "wp-capistrano" do
 
                info "install #{plugin[:slug]}:#{plugin[:version]}"
                if(plugin[:version]) == "latest"
-                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
                   info "install #{plugin[:slug]}"
                else
-                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
                   info "install #{plugin[:slug]} #{plugin[:version]}"
                end
            end
            plugins.each do |plugin|
            	if (plugin[:status] == "active")
-                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path}"
                   info "activate #{plugin[:slug]}"
                else
-                  execute "/usr/bin/env php /tmp/wp-cli.phar plugin deactivate #{plugin[:slug]} --path=#{release_path}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin deactivate #{plugin[:slug]} --path=#{release_path}"
                   info "deactivate #{plugin[:slug]}"
                end
            end
