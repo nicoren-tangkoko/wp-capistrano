@@ -2,8 +2,8 @@ namespace "wp-capistrano" do
   desc 'Install wordpress'
   task :install_wordpress do
     on roles(:app), filter: :no_release do
-          puts "#{fetch(:shared_directory)}/wp-config.php exist ?"
-          if (File.exist?("#{fetch(:shared_directory)}/wp-config.php") == false)
+          puts "#{shared_path}/wp-config.php exist ?"
+          if (File.exist?("#{shared_path}/wp-config.php") == false)
           	execute "php #{fetch(:tmp_dir)}/wp-cli.phar config create --dbname=#{fetch(:wp_db_name)} --dbuser=#{fetch(:wp_db_user)} --dbpass=#{fetch(:wp_db_password)} --dbhost='#{fetch(:wp_db_host)}'  --locale=#{fetch(:wp_locale)} --path=#{release_path}"
           	execute "cp #{release_path}/wp-config.php #{shared_path}/"
           end
