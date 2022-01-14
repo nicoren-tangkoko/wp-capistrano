@@ -2,7 +2,7 @@ namespace "wp-capistrano" do
   desc 'Install plugins dependencies using composer'
   task :plugins_composer_install do
       on roles(:app) do
-        pluginDirectory = "#{release_path}/wp-content/plugins/"
+        pluginDirectory = "../app/web/wp-content/plugins/"
 
         Dir.foreach(pluginDirectory) { |directory| 
           if (directory != "." and directory != "..")
