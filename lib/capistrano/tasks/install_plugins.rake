@@ -81,6 +81,12 @@ namespace "wp-capistrano" do
                   info "deactivate #{plugin[:slug]}"
                end
            end
+           
+           if( !jsonPlugins["languages"].nil? )
+	        jsonPlugins["languages"].each do |language|
+	            execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar language plugin install --all #{language} --path=#{release_path}"
+	        end
+	    end
          end
       end
     end
