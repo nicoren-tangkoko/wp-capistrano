@@ -42,6 +42,9 @@ namespace "wp-capistrano" do
 	            end
 	        end
 	    end
+            plugins.each do |plugin|
+                info("slug => #{plugin[:slug]}, version => #{plugin[:version]}, status=> #{plugin[:status]}")
+            end
 	    
 	    if( !jsonPlugins["languages"].nil? )
 	        jsonPlugins["languages"].each do |language|
