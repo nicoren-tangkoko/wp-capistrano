@@ -65,10 +65,10 @@ namespace "wp-capistrano" do
 
                info "install #{plugin[:slug]}:#{plugin[:version]}"
                if(plugin[:version]) == "latest"
-                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --force"
                   info "install #{plugin[:slug]}"
                else
-                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]}"
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --version=#{plugin[:version]} --force"
                   info "install #{plugin[:slug]} #{plugin[:version]}"
                end
            end
