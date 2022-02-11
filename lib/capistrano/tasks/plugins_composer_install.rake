@@ -5,10 +5,12 @@ namespace "wp-capistrano" do
         pluginDirectory = "../app/web/wp-content/plugins/"
 
         Dir.foreach(pluginDirectory) { |directory| 
-          if (directory != "." and directory != "..")
+          if (directory != "." and directory != ".." && File.directory?(pluginDirectory + directory))
             puts "#################################\n# Plugin #{directory}\n#################################" 
             Dir.chdir(pluginDirectory + directory) do
               puts 
+              info(Dir.exist?(Dir.pwd + '/vendor'))
+              info(File.exist?(Dir.pwd + '/composer.lock'))
               if (Dir.exist?(Dir.pwd + '/vendor') == false && File.exist?(Dir.pwd + '/composer.lock') == true)
                 puts '=> NEED INSTALL : There is no vendor installed and composer.lock'
                 execute "ls #{release_path}/wp-content/plugins/"
