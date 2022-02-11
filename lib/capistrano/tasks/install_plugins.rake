@@ -34,8 +34,8 @@ namespace "wp-capistrano" do
 	        jsonPlugins["plugins"].each do |plugin, version|
 	            plugginInfo = plugins.detect {|f| f["slug"] == plugin }
 	            if(plugginInfo)
-	              plugginInfo[:version] = version
-	              plugginInfo[:status] = "active"
+	              index = plugins.index(plugginInfo)
+	              plugins[:index]= {:slug =>  plugin, :version => version, :status => "active" }
 	            else
 	              pluginInfo = {:slug =>  plugin, :version => version, :status => "active" }
 	              plugins.push(pluginInfo)
