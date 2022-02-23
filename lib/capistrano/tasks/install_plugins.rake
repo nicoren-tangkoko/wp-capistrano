@@ -76,6 +76,8 @@ namespace "wp-capistrano" do
            	if (plugin[:status] == "active")
                   execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path}"
                   info "activate #{plugin[:slug]}"
+                elsif(plugin[:status] == "active-network")
+                  execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path} --network"
                 elsif(plugin[:status] == "inactive")
                   execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin deactivate #{plugin[:slug]} --path=#{release_path}"
                   info "deactivate #{plugin[:slug]}"
