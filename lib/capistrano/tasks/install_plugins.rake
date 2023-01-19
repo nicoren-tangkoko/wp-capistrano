@@ -52,17 +52,17 @@ namespace "wp-capistrano" do
 
 
             plugins.each do |plugin|
+               if (plugin[:version] == "uninstall")
+                  warn "Uninstall pluggin #{plugin[:slug]}"
+                  next
+               end
+               
                existingPlugins = capture("/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin search #{plugin[:slug]} --path=#{release_path} --field=slug --per-page=999999")
                if (existingPlugins.to_s.gsub(/\n/, '|').split("|").include?("#{plugin[:slug]}") == false)
                   warn "Pluggin #{plugin[:slug]} not known in wordpress repository. skip installation"
                   next
                end
                
-               if (plugin[:version] == "uninstall")
-                  warn "Uninstall pluggin #{plugin[:slug]}"
-                  next
-               end
-
                info "install #{plugin[:slug]}:#{plugin[:version]}"
                if(plugin[:version]) == "latest"
                   execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin install #{plugin[:slug]} --path=#{release_path} --force"
