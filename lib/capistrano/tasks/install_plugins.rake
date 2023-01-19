@@ -73,6 +73,10 @@ namespace "wp-capistrano" do
                end
            end
            plugins.each do |plugin|
+            if(plugin[:version] == "uninstall")
+              warn "Skipping #{plugin[:slug]}"
+              next
+            end
            	if (plugin[:status] == "active")
                   execute "/usr/bin/env php #{fetch(:tmp_dir)}/wp-cli.phar plugin activate #{plugin[:slug]} --path=#{release_path}"
                   info "activate #{plugin[:slug]}"
