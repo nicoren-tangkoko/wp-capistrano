@@ -13,11 +13,11 @@ namespace "wp-capistrano" do
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $1 }'")
+            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $2 }'")
             installedPluginsArr = installedPlugins.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsStatus = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $2 }'")
+            installedPluginsStatus = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
             installedPluginsStatusArr = installedPluginsStatus.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsVersion = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
+            installedPluginsVersion = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $8 }'")
             installedPluginsVersionArr = installedPluginsVersion.to_s.gsub(/\n/, '|').split("|")
             
             plugins = []
