@@ -13,14 +13,14 @@ namespace "wp-capistrano" do
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'").split("\n");
-              
+            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'");
+            
             plugins = []
             languages = []
             
-            installedPlugins.each_with_index do |pluginStr, index|
+            installedPlugins.each_line do |line|
                  
-                  plugin = pluginStr.split(":");
+                  plugin = line.split(":");
                   if(plugin[0].empty?)
                      next
                   end
