@@ -14,7 +14,7 @@ namespace "wp-capistrano" do
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
             installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'");
-            
+            execute "php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'"
             plugins = []
             languages = []
             
