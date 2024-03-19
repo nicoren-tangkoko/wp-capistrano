@@ -19,10 +19,11 @@ namespace "wp-capistrano" do
             languages = []
             
             installedPlugins.each_with_index do |pluginStr, index|
+                 
+                  plugin = pluginStr.split(":");
                   if(plugin[0].empty?)
                      next
                   end
-                  plugin = pluginStr.spit(":");
                   pluginInfo = {:slug =>  plugin[0], :version =>  plugin[1], :status =>  plugin[2] }
                   plugins.push(pluginInfo)
             end
