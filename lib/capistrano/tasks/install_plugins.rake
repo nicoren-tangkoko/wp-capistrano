@@ -13,21 +13,17 @@ namespace "wp-capistrano" do
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $2 }'")
-            installedPluginsArr = installedPlugins.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsStatus = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $4 }'")
-            installedPluginsStatusArr = installedPluginsStatus.to_s.gsub(/\n/, '|').split("|")
-            installedPluginsVersion = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk '{ print $8 }'")
-            installedPluginsVersionArr = installedPluginsVersion.to_s.gsub(/\n/, '|').split("|")
-            
+            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'")
+              
             plugins = []
             languages = []
             
-            installedPluginsArr.each_with_index do |plugin, index|
-                  if(index == 0)
+            installedPlugins.each_with_index do |pluginStr, index|
+                  if(plugin[0].empty?)
                      next
                   end
-                  pluginInfo = {:slug =>  plugin, :version => installedPluginsVersionArr[index], :status => installedPluginsStatusArr[index] }
+                  plugin = pluginStr.spit(":");
+                  pluginInfo = {:slug =>  plugin[0], :version =>  plugin[1], :status =>  plugin[2] }
                   plugins.push(pluginInfo)
             end
             if( !jsonPlugins["plugins"].nil? )
