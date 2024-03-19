@@ -57,10 +57,10 @@ namespace "wp-capistrano" do
                   next
                end
                
-               if(plugin[:slug].empty?){
+               if(plugin[:slug].empty?)
                   warn "Slug empty : '#{plugin[:slug]}'"
                   next
-               }
+               end
                
                existingPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin search #{plugin[:slug]} --path=#{release_path} --field=slug --per-page=999999")
                if (existingPlugins.to_s.gsub(/\n/, '|').split("|").include?("#{plugin[:slug]}") == false)
