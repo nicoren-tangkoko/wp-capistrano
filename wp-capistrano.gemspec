@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'wp-capistrano3'
-  spec.version       = '0.0.45'
+  spec.version       = '0.0.46'
   spec.authors       = ['Nicolas RENAULT']
   spec.email         = ['nrenault@tangkoko.com']
   spec.description   = %q{Wordpress tasks for Capistrano 3.x}
