@@ -6,15 +6,16 @@ namespace "wp-capistrano" do
          jsonPlugins = []
          info "Check file #{release_path}/plugins.json"
          if (test("[ -f #{release_path}/plugins.json ]"))
-            debug "#{release_path}/plugins.json exist"
+            info "#{release_path}/plugins.json exist"
             pluginsStr = capture("cat #{release_path}/plugins.json")
             jsonPlugins = JSON.parse(pluginsStr)
          end
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'");
-            execute "php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=":"} {print $2,$4,$6,$8}'"
+            execute "php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=\":\"} {print $1,$2,$4}'"
+            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=\":\"} {print $1,$2,$4}'");
+            info installedPlugins
             plugins = []
             languages = []
             
