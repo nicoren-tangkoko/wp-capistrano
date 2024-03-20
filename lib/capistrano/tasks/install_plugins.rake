@@ -13,20 +13,18 @@ namespace "wp-capistrano" do
                   
          if(test("[ -L #{current_path} ]"))
             info "installing pluggins..."
-            execute "php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=\":\"} {print $1,$2,$4}'"
-            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path} |awk 'BEGIN{OFS=\":\"} {print $1,$2,$4}'");
+            execute "php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path}"
+            installedPlugins = capture("php #{fetch(:tmp_dir)}/wp-cli.phar plugin list --path=#{current_path}");
             info installedPlugins
             plugins = []
             languages = []
-            
             installedPlugins.each_line do |line|
-                 
-                  plugin = line.split(":");
-                  if(plugin[0].empty?)
-                     next
-                  end
-                  pluginInfo = {:slug =>  plugin[0], :version =>  plugin[1], :status =>  plugin[2] }
-                  plugins.push(pluginInfo)
+               plugin= line.scan(/[\w\-\.\_]+/)
+               if(plugin[0].empty?)
+                  next
+               end
+               pluginInfo = {:slug =>  plugin[0], :version =>  plugin[1], :status =>  plugin[2] }
+               plugins.push(pluginInfo)
             end
             if( !jsonPlugins["plugins"].nil? )
 	        jsonPlugins["plugins"].each do |plugin, version|
